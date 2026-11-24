@@ -1,0 +1,122 @@
+
+@import "tailwindcss";
+
+:root {
+  --ivory: #f8f5ef;
+  --champagne: #d6ad60;
+  --charcoal: #080808;
+  --taupe: #89705a;
+  --white: #ffffff;
+  --gold: #d6ad60;
+}
+
+@theme inline {
+  --color-ivory: var(--ivory);
+  --color-champagne: var(--champagne);
+  --color-charcoal: var(--charcoal);
+  --color-taupe: var(--taupe);
+  --color-gold: var(--gold);
+
+  --font-heading: var(--font-outfit);
+  --font-body: var(--font-manrope);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--ivory);
+  color: var(--charcoal);
+  font-family: var(--font-manrope), sans-serif;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-outfit), sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  line-height: 1.08;
+}
+
+::selection {
+  background: var(--champagne);
+  color: var(--charcoal);
+}
+
+.section-container {
+  width: min(100% - 40px, 1280px);
+  margin-inline: auto;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.luxury-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 26px;
+  background: var(--champagne);
+  color: var(--charcoal);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: background 250ms, transform 250ms;
+}
+
+.luxury-button:hover {
+  background: #e8cda5;
+  transform: translateY(-2px);
+}
+
+.font-heading {
+  font-family: var(--font-outfit), sans-serif;
+}
+
+.brand-eyebrow {
+  font-family: var(--font-outfit), sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* Portfolio refinements */
+
+#portfolio {
+  scroll-margin-top: 100px;
+}
+
+#portfolio button:focus-visible,
+#portfolio a:focus-visible,
+#portfolio-lightbox button:focus-visible {
+  outline: 2px solid var(--champagne);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #portfolio *,
+  #portfolio-lightbox * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+

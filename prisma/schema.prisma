@@ -1,0 +1,77 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model EventEnquiry {
+  id                    String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  enquiryReference      String             @unique @map("enquiry_reference") @db.VarChar(32)
+  idempotencyKeyHash    String             @unique @map("idempotency_key_hash") @db.VarChar(64)
+  customerName          String             @map("customer_name") @db.VarChar(160)
+  customerEmail         String             @map("customer_email") @db.VarChar(320)
+  customerPhone         String             @map("customer_phone") @db.VarChar(16)
+  preferredContactMethod String            @map("preferred_contact_method") @db.VarChar(16)
+  companyName           String?            @map("company_name") @db.VarChar(180)
+  serviceCategory       String             @map("service_category") @db.VarChar(32)
+  eventType             String             @map("event_type") @db.VarChar(120)
+  eventDate             DateTime?          @map("event_date") @db.Date
+  dateFlexible          Boolean            @default(false) @map("date_flexible")
+  eventCity             String             @map("event_city") @db.VarChar(120)
+  eventLocation         String?            @map("event_location") @db.VarChar(180)
+  expectedGuests        Int?               @map("expected_guests")
+  estimatedBudget       String?            @map("estimated_budget") @db.VarChar(32)
+  venueStatus           String             @map("venue_status") @db.VarChar(16)
+  eventDescription      String?            @map("event_description") @db.VarChar(5000)
+  consentToContact      Boolean            @map("consent_to_contact")
+  status                String             @default("NEW") @db.VarChar(20)
+  priority              String             @default("MEDIUM") @db.VarChar(10)
+  internalNotes         String?            @map("internal_notes") @db.VarChar(10000)
+  createdAt             DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime           @default(now()) @map("updated_at") @db.Timestamptz(6)
+  activity              EnquiryActivity[]
+
+  @@index([createdAt(sort: Desc)], map: "event_enquiries_created_at_idx")
+  @@index([status, createdAt(sort: Desc)], map: "event_enquiries_status_created_at_idx")
+  @@index([serviceCategory, createdAt(sort: Desc)], map: "event_enquiries_category_created_at_idx")
+  @@map("event_enquiries")
+}
+
+model EnquiryActivity {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  enquiryId      String       @map("enquiry_id") @db.Uuid
+  previousStatus String?      @map("previous_status") @db.VarChar(20)
+  newStatus      String       @map("new_status") @db.VarChar(20)
+  changedBy      String       @map("changed_by") @db.VarChar(320)
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  enquiry        EventEnquiry @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+
+  @@index([enquiryId, createdAt(sort: Desc)], map: "enquiry_activity_enquiry_created_idx")
+  @@map("enquiry_activity")
+}
+
+model AdminSession {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tokenHash String    @unique @map("token_hash") @db.VarChar(64)
+  email     String    @db.VarChar(320)
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([email, expiresAt], map: "admin_sessions_email_expiry_idx")
+  @@index([expiresAt], map: "admin_sessions_expiry_idx")
+  @@map("admin_sessions")
+}
+
+model RateLimitBucket {
+  bucketKey       String   @id @map("bucket_key") @db.VarChar(100)
+  windowStartedAt DateTime @map("window_started_at") @db.Timestamptz(6)
+  requestCount    Int      @default(1) @map("request_count")
+
+  @@index([windowStartedAt], map: "rate_limit_buckets_window_idx")
+  @@map("rate_limit_buckets")
+}
